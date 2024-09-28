@@ -1,0 +1,32 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Entorno
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Directorios temporales
+tmp/
+temp/
+dist/
+build/
+
+# Sistemas operativos y editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Otros
+coverage/
+*.bak
