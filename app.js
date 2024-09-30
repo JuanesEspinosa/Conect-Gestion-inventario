@@ -24,7 +24,7 @@ app.get('/usuarios', async (req, res) => {
   }
 });
 
-
+//metodo get para obtener todos los productos 
 app.get('/productos', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM productos'); // Consulta SQL
@@ -35,6 +35,7 @@ app.get('/productos', async (req, res) => {
   }
 });
 
+//metodo post para crear un producto   
 app.post('/productos', async (req, res) => {
   const { nombre, descripcion, precio, cantidad } = req.body;
   try {
@@ -47,8 +48,33 @@ app.post('/productos', async (req, res) => {
   }
 }); 
 
+//metodo delete para eliminar un producto 
+app.delete('/productos/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM productos WHERE id = $1', [id]);
+    res.json({ message: 'Producto eliminado correctamente' });
+  } catch (err) {
+    console.error('Error ejecutando la consulta', err.stack);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+}); 
 
-// Método POST para verificar el usuario
+//metodo put para actualizar un producto 
+app.put('/productos/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nombre, descripcion, precio, cantidad } = req.body;
+  try {
+    await pool.query('UPDATE productos SET nombre = $1, descripcion = $2, precio = $3, cantidad = $4 WHERE id = $5', [nombre, descripcion, precio, cantidad, id]);
+    res.json({ message: 'Producto actualizado correctamente' });
+  } catch (err) {
+    console.error('Error ejecutando la consulta', err.stack);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+}); 
+
+
+// Método POST para verificar el usuario 
 app.post('/login', async (req, res) => {
   const { correo, password } = req.body;
   console.log(correo, password);
