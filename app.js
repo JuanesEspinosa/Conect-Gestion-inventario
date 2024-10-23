@@ -24,6 +24,19 @@ app.get('/usuarios', async (req, res) => {
   }
 });
 
+app.get('/juanes', async (req, res) => {
+  
+  
+  try {
+    const result = await pool.query('SELECT * FROM productos'); // Consulta SQL
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error ejecutando la consulta', err.stack);
+    res.status(500).send('Error en el servidor');
+  }
+  
+});
+
 //metodo get para obtener todos los productos 
 app.get('/productos', async (req, res) => {
   try {
@@ -47,6 +60,32 @@ app.post('/productos', async (req, res) => {
     res.status(500).json({ message: 'Error en el servidor' });
   }
 }); 
+
+
+
+app.post('/venta', async (req, res) => {
+  const { fecha_venta, detalle_venta, empleado, email_cliente, total } = req.body;
+  try {
+    const query = 'INSERT INTO ventas (fecha_venta, detalle_venta, empleado, email_cliente, total) VALUES ($1, $2, $3, $4, $5)';
+    await pool.query(query, [fecha_venta, detalle_venta,empleado, email_cliente, total]);
+    res.status(201).json({ message: 'Venta creada correctamente' });
+  } catch (err) {
+    console.error('Error ejecutando la consulta', err.stack);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+});
+
+app.get('/ventas', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM ventas');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error ejecutando la consulta', err.stack);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+});
+
+
 
 //metodo delete para eliminar un producto 
 app.delete('/productos/:id', async (req, res) => {
