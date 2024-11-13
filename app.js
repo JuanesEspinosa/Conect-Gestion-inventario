@@ -24,9 +24,45 @@ app.get('/usuarios', async (req, res) => {
   }
 });
 
-app.get('/juanes', async (req, res) => {
-  
-  
+app.post('/usuarios', async (req, res) => {
+  const { nombre, correo, password,activo } = req.body;
+  try {
+    const query = 'INSERT INTO usuarios (nombre, correo, password,activo) VALUES ($1, $2, $3, $4)';
+    await pool.query(query, [nombre, correo, password,activo]);
+    res.status(201).json({ message: 'Usuario creado correctamente' });
+  } catch (err) {
+    console.error('Error ejecutando la consulta', err.stack);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+});
+
+app.put('/usuarios/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nombre, correo, rol,activo } = req.body;
+  try {
+    const query = 'UPDATE usuarios SET nombre = $1, correo = $2, rol = $3,activo = $4 WHERE id = $5';
+    await pool.query(query, [nombre, correo, rol,activo, id]);
+    res.json({ message: 'Usuario actualizado correctamente' });
+  } catch (err) {
+    console.error('Error ejecutando la consulta', err.stack);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+});
+
+app.delete('/usuarios/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM usuarios WHERE id = $1', [id]);
+    res.json({ message: 'Usuario eliminado correctamente' });
+  } catch (err) {
+    console.error('Error ejecutando la consulta', err.stack);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+}); 
+
+
+
+app.get('/juanes', async (req, res) => { 
   try {
     const result = await pool.query('SELECT * FROM productos'); // Consulta SQL
     res.json(result.rows);
@@ -127,7 +163,8 @@ app.post('/login', async (req, res) => {
     const result = await pool.query(query, [correo, password]);
 
     if (result.rows.length > 0) {
-      res.json({ message: 'Usuario autenticado correctamente', user: result.rows[0] });
+      res.json(result.rows);
+
     } else {
       res.status(401).json({ message: 'Credenciales incorrectas' });
     }
