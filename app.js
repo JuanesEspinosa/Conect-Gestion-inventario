@@ -24,11 +24,25 @@ app.get('/usuarios', async (req, res) => {
   }
 });
 
-app.post('/usuarios', async (req, res) => {
-  const { nombre, correo, password,activo } = req.body;
+
+app.get('/usuarios/:id', async (req, res) => {
+  const { id } = req.params;
   try {
-    const query = 'INSERT INTO usuarios (nombre, correo, password,activo) VALUES ($1, $2, $3, $4)';
-    await pool.query(query, [nombre, correo, password,activo]);
+    const result = await pool.query('SELECT * FROM usuarios WHERE id = $1', [id]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error ejecutando la consulta', err.stack);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+});
+
+
+
+app.post('/usuarios', async (req, res) => {
+  const { nombre, correo, rol, password,activo } = req.body;
+  try {
+    const query = 'INSERT INTO usuarios (nombre, correo, rol, password,activo) VALUES ($1, $2, $3, $4, $5)';
+    await pool.query(query, [nombre, correo, rol, password,activo]);
     res.status(201).json({ message: 'Usuario creado correctamente' });
   } catch (err) {
     console.error('Error ejecutando la consulta', err.stack);
@@ -72,6 +86,56 @@ app.get('/juanes', async (req, res) => {
   }
   
 });
+
+app.get('/clientes', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM clientes');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error ejecutando la consulta', err.stack);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+});
+
+
+app.post('/clientes', async (req, res) => {
+  const { nombre, correo, telefono, documento, direccion, fecha_nacimiento } = req.body;
+  try {
+    const query = 'INSERT INTO clientes (nombre, correo, telefono, documento, direccion, fecha_nacimiento) VALUES ($1, $2, $3, $4, $5, $6)';
+    await pool.query(query, [nombre, correo, telefono, documento, direccion, fecha_nacimiento]);
+    res.status(201).json({ message: 'Cliente creado correctamente' });
+  } catch (err) {
+    console.error('Error ejecutando la consulta', err.stack);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+});
+
+
+app.put('/clientes/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nombre, correo, telefono, documento, direccion, fecha_nacimiento } = req.body;
+  try {
+    const query = 'UPDATE clientes SET nombre = $1, correo = $2, telefono = $3, documento = $4, direccion = $5, fecha_nacimiento = $6 WHERE id = $7';
+    await pool.query(query, [nombre, correo, telefono, documento, direccion, fecha_nacimiento, id]);
+    res.json({ message: 'Cliente actualizado correctamente' });
+  } catch (err) {
+    console.error('Error ejecutando la consulta', err.stack);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+});
+
+
+app.delete('/clientes/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM clientes WHERE id = $1', [id]);
+    res.json({ message: 'Cliente eliminado correctamente' });
+  } catch (err) {
+    console.error('Error ejecutando la consulta', err.stack);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+});
+
 
 //metodo get para obtener todos los productos 
 app.get('/productos', async (req, res) => {
